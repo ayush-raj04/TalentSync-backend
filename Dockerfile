@@ -1,11 +1,13 @@
+
 FROM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
 COPY pom.xml .
+COPY settings.xml /root/.m2/settings.xml
 COPY src ./src
 
-RUN mvn -B -ntp -Dmaven.wagon.http.retryHandler.count=5 clean package -DskipTests
+RUN mvn -B -ntp clean package -DskipTests
 
 FROM eclipse-temurin:17-jre
 
@@ -13,6 +15,6 @@ WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
 
-EXPOSE 10000
+EXPOSE 8081
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
